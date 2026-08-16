@@ -35,10 +35,20 @@ jobs:
         with:
           name: ghostty
       - name: Install devenv
+        if: matrix.platform != 'macos-x86_64'
         run: nix profile add nixpkgs#devenv
+      - name: Install devenv for Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: nix profile add github:NixOS/nixpkgs/nixpkgs-26.05-darwin#devenv
       - name: Build and test
-        if: matrix.platform != 'linux-arm64'
+        if: matrix.platform != 'linux-arm64' && matrix.platform != 'macos-x86_64'
         run: devenv shell -- ./gradlew clean check --no-daemon
+      - name: Build and test on Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: >-
+          devenv shell --override-input nixpkgs
+          github:NixOS/nixpkgs/nixpkgs-26.05-darwin --
+          ./gradlew clean check --no-daemon
       - name: Verify standalone published consumer
         if: matrix.platform == 'macos-arm64' || matrix.platform == 'linux-x86_64'
         run: devenv shell -- ./gradlew consumerSmokeTest --no-daemon
