@@ -235,8 +235,12 @@ let
             --force \
             --name composetty-x86_64 \
             --package 'system-images;android-35;google_apis_playstore;x86_64'
+          adb="$sdk/platform-tools/adb"
+          emulator_log="$state/emulator.log"
+          "$adb" start-server >/dev/null
           "$sdk/emulator/emulator" \
             -avd composetty-x86_64 \
+            -port 5554 \
             -no-window \
             -no-audio \
             -no-boot-anim \
@@ -245,26 +249,36 @@ let
             -gpu swiftshader_indirect \
             -accel on \
             -cores 2 \
-            -memory 2048 &
+            -memory 2048 >"$emulator_log" 2>&1 &
           emulator_pid=$!
 
-          "$sdk/platform-tools/adb" wait-for-device
+          if ! timeout 240 "$adb" -s emulator-5554 wait-for-device; then
+            echo "Timed out waiting for the Android emulator device" >&2
+            tail -100 "$emulator_log" >&2
+            exit 1
+          fi
           for _ in $(seq 1 180); do
-            if [ "$("$sdk/platform-tools/adb" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; then
+            if [ "$("$adb" -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; then
               break
             fi
             if ! kill -0 "$emulator_pid" 2>/dev/null; then
               echo "Android emulator exited before boot completed" >&2
+              tail -100 "$emulator_log" >&2
               exit 1
             fi
             sleep 1
           done
-          if [ "$("$sdk/platform-tools/adb" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" != 1 ]; then
-            echo "Timed out waiting for the Android x86_64 emulator" >&2
+          if [ "$("$adb" -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" != 1 ]; then
+            echo "Timed out waiting for the Android x86_64 emulator to boot" >&2
+            tail -100 "$emulator_log" >&2
             exit 1
           fi
 
-          "$workspace/gradlew" androidConnectedCheck --no-daemon
+          if ! timeout 600 "$workspace/gradlew" androidConnectedCheck --no-daemon; then
+            echo "Android x86_64 device tests failed or timed out" >&2
+            tail -100 "$emulator_log" >&2
+            exit 1
+          fi
         '';
       }
     else
