@@ -1,0 +1,18 @@
+COMPOSETTY_GHOSTTY_1.0 {
+  global:
+    composetty_terminal_create;
+    composetty_terminal_destroy;
+    composetty_terminal_write;
+    composetty_terminal_resize;
+    composetty_terminal_scroll;
+    composetty_terminal_set_colors;
+    composetty_terminal_snapshot;
+    composetty_terminal_encode_key;
+    composetty_terminal_encode_paste;
+    composetty_terminal_select;
+    composetty_terminal_clear_selection;
+    composetty_terminal_selection;
+    composetty_terminal_drain_pty_writes;
+  local:
+    *;
+};

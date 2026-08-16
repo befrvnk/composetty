@@ -1,0 +1,4 @@
+headers = bridge.h
+headerFilter = bridge.h
+package = dev.befrvnk.composetty.native
+staticLibraries = libcomposetty-ghostty.a

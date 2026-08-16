@@ -1,0 +1,13 @@
+Composetty
+Copyright 2026 Frank Hermann
+
+Composetty includes a native library statically linked with libghostty-vt.
+Ghostty is licensed under the MIT License:
+
+Copyright (c) 2024 Mitchell Hashimoto, Ghostty contributors
+
+The complete Ghostty license is included in META-INF/LICENSE-ghostty and at
+https://github.com/ghostty-org/ghostty/blob/main/LICENSE.
+
+Ghostty is used to identify the upstream project and library. Composetty is an
+independent project and is not affiliated with or endorsed by the Ghostty project.

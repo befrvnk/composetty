@@ -1,0 +1,89 @@
+name: Build release native resources
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing signed release tag to build
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            platform: macos-arm64
+          - os: macos-15-intel
+            platform: macos-x86_64
+          - os: ubuntu-24.04-arm
+            platform: linux-arm64
+          - os: ubuntu-24.04
+            platform: linux-x86_64
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag }}
+      - name: Validate release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='${{ inputs.tag }}'
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)[0-9]+)?$ ]]
+          test "$(git describe --tags --exact-match HEAD)" = "$tag"
+      - uses: cachix/install-nix-action@b4b293eae0b79aac8a161bb32925a5508c9cca93 # v31
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: devenv
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: ghostty
+      - name: Install devenv
+        if: matrix.platform != 'macos-x86_64'
+        run: nix profile add nixpkgs#devenv
+      - name: Install devenv for Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: nix profile add github:NixOS/nixpkgs/nixpkgs-26.05-darwin#devenv
+      - name: Build native bridge
+        if: matrix.platform != 'macos-x86_64'
+        run: devenv build outputs.native
+      - name: Build native bridge on Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: >-
+          devenv build --override-input nixpkgs
+          github:NixOS/nixpkgs/nixpkgs-26.05-darwin outputs.native
+      - name: Test native integration
+        if: matrix.platform != 'linux-arm64' && matrix.platform != 'macos-x86_64'
+        run: devenv shell -- ./gradlew test --no-daemon
+      - name: Test native integration on Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: >-
+          devenv shell --override-input nixpkgs
+          github:NixOS/nixpkgs/nixpkgs-26.05-darwin -- ./gradlew test --no-daemon
+      - name: Export native Maven resources
+        if: matrix.platform != 'macos-x86_64'
+        run: devenv shell -- native-export artifact
+      - name: Export native Maven resources on Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: >-
+          devenv shell --override-input nixpkgs
+          github:NixOS/nixpkgs/nixpkgs-26.05-darwin -- native-export artifact
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: native-${{ matrix.platform }}
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 7

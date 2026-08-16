@@ -1,0 +1,324 @@
+public final class dev/befrvnk/composetty/GhosttyTerminalKt {
+	public static final fun GhosttyTerminal (Ldev/befrvnk/composetty/TerminalSession;Ldev/befrvnk/composetty/TerminalTheme;Landroidx/compose/ui/Modifier;Ldev/befrvnk/composetty/TerminalTextStyle;ZLandroidx/compose/runtime/Composer;II)V
+}
+
+public final class dev/befrvnk/composetty/GhosttyTerminalSessionFactory : dev/befrvnk/composetty/TerminalSessionFactory {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun create (Ldev/befrvnk/composetty/TerminalTheme;Ldev/befrvnk/composetty/TerminalTransport;)Ldev/befrvnk/composetty/TerminalSession;
+}
+
+public final class dev/befrvnk/composetty/LocalPtyTerminalSessionFactory {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun create (Ljava/lang/String;Ldev/befrvnk/composetty/TerminalTheme;)Ldev/befrvnk/composetty/TerminalSession;
+}
+
+public final class dev/befrvnk/composetty/TerminalCell {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ldev/befrvnk/composetty/TerminalCellWidth;III)V
+	public synthetic fun <init> (Ljava/lang/String;Ldev/befrvnk/composetty/TerminalCellWidth;IIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ldev/befrvnk/composetty/TerminalCellWidth;
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()I
+	public final fun copy (Ljava/lang/String;Ldev/befrvnk/composetty/TerminalCellWidth;III)Ldev/befrvnk/composetty/TerminalCell;
+	public static synthetic fun copy$default (Ldev/befrvnk/composetty/TerminalCell;Ljava/lang/String;Ldev/befrvnk/composetty/TerminalCellWidth;IIIILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalCell;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBackground ()I
+	public final fun getFlags ()I
+	public final fun getForeground ()I
+	public final fun getGrapheme ()Ljava/lang/String;
+	public final fun getWidth ()Ldev/befrvnk/composetty/TerminalCellWidth;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/befrvnk/composetty/TerminalCellPosition {
+	public static final field $stable I
+	public fun <init> (II)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun copy (II)Ldev/befrvnk/composetty/TerminalCellPosition;
+	public static synthetic fun copy$default (Ldev/befrvnk/composetty/TerminalCellPosition;IIILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalCellPosition;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColumn ()I
+	public final fun getRow ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/befrvnk/composetty/TerminalCellWidth : java/lang/Enum {
+	public static final field Narrow Ldev/befrvnk/composetty/TerminalCellWidth;
+	public static final field Wide Ldev/befrvnk/composetty/TerminalCellWidth;
+	public static final field WideSpacerHead Ldev/befrvnk/composetty/TerminalCellWidth;
+	public static final field WideSpacerTail Ldev/befrvnk/composetty/TerminalCellWidth;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/befrvnk/composetty/TerminalCellWidth;
+	public static fun values ()[Ldev/befrvnk/composetty/TerminalCellWidth;
+}
+
+public final class dev/befrvnk/composetty/TerminalCells {
+	public static final field $stable I
+	public final fun background (I)I
+	public final fun flags (I)I
+	public final fun foreground (I)I
+	public final fun get (I)Ldev/befrvnk/composetty/TerminalCell;
+	public final fun getSize ()I
+	public final fun grapheme (I)Ljava/lang/String;
+	public final fun width (I)Ldev/befrvnk/composetty/TerminalCellWidth;
+}
+
+public final class dev/befrvnk/composetty/TerminalCursorStyle : java/lang/Enum {
+	public static final field Bar Ldev/befrvnk/composetty/TerminalCursorStyle;
+	public static final field Block Ldev/befrvnk/composetty/TerminalCursorStyle;
+	public static final field BlockHollow Ldev/befrvnk/composetty/TerminalCursorStyle;
+	public static final field Underline Ldev/befrvnk/composetty/TerminalCursorStyle;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/befrvnk/composetty/TerminalCursorStyle;
+	public static fun values ()[Ldev/befrvnk/composetty/TerminalCursorStyle;
+}
+
+public final class dev/befrvnk/composetty/TerminalKey : java/lang/Enum {
+	public static final field A Ldev/befrvnk/composetty/TerminalKey;
+	public static final field ArrowDown Ldev/befrvnk/composetty/TerminalKey;
+	public static final field ArrowLeft Ldev/befrvnk/composetty/TerminalKey;
+	public static final field ArrowRight Ldev/befrvnk/composetty/TerminalKey;
+	public static final field ArrowUp Ldev/befrvnk/composetty/TerminalKey;
+	public static final field B Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Backquote Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Backslash Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Backspace Ldev/befrvnk/composetty/TerminalKey;
+	public static final field BracketLeft Ldev/befrvnk/composetty/TerminalKey;
+	public static final field BracketRight Ldev/befrvnk/composetty/TerminalKey;
+	public static final field C Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Comma Ldev/befrvnk/composetty/TerminalKey;
+	public static final field D Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Delete Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit0 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit1 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit2 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit3 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit4 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit5 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit6 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit7 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit8 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Digit9 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field E Ldev/befrvnk/composetty/TerminalKey;
+	public static final field End Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Enter Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Equal Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Escape Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F1 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F10 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F11 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F12 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F2 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F3 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F4 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F5 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F6 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F7 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F8 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field F9 Ldev/befrvnk/composetty/TerminalKey;
+	public static final field G Ldev/befrvnk/composetty/TerminalKey;
+	public static final field H Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Home Ldev/befrvnk/composetty/TerminalKey;
+	public static final field I Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Insert Ldev/befrvnk/composetty/TerminalKey;
+	public static final field J Ldev/befrvnk/composetty/TerminalKey;
+	public static final field K Ldev/befrvnk/composetty/TerminalKey;
+	public static final field L Ldev/befrvnk/composetty/TerminalKey;
+	public static final field M Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Minus Ldev/befrvnk/composetty/TerminalKey;
+	public static final field N Ldev/befrvnk/composetty/TerminalKey;
+	public static final field O Ldev/befrvnk/composetty/TerminalKey;
+	public static final field P Ldev/befrvnk/composetty/TerminalKey;
+	public static final field PageDown Ldev/befrvnk/composetty/TerminalKey;
+	public static final field PageUp Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Period Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Q Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Quote Ldev/befrvnk/composetty/TerminalKey;
+	public static final field R Ldev/befrvnk/composetty/TerminalKey;
+	public static final field S Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Semicolon Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Slash Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Space Ldev/befrvnk/composetty/TerminalKey;
+	public static final field T Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Tab Ldev/befrvnk/composetty/TerminalKey;
+	public static final field U Ldev/befrvnk/composetty/TerminalKey;
+	public static final field V Ldev/befrvnk/composetty/TerminalKey;
+	public static final field W Ldev/befrvnk/composetty/TerminalKey;
+	public static final field X Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Y Ldev/befrvnk/composetty/TerminalKey;
+	public static final field Z Ldev/befrvnk/composetty/TerminalKey;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/befrvnk/composetty/TerminalKey;
+	public static fun values ()[Ldev/befrvnk/composetty/TerminalKey;
+}
+
+public final class dev/befrvnk/composetty/TerminalKeyAction : java/lang/Enum {
+	public static final field Press Ldev/befrvnk/composetty/TerminalKeyAction;
+	public static final field Release Ldev/befrvnk/composetty/TerminalKeyAction;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/befrvnk/composetty/TerminalKeyAction;
+	public static fun values ()[Ldev/befrvnk/composetty/TerminalKeyAction;
+}
+
+public final class dev/befrvnk/composetty/TerminalKeyEvent {
+	public static final field $stable I
+	public fun <init> (Ldev/befrvnk/composetty/TerminalKey;Ldev/befrvnk/composetty/TerminalKeyAction;Ljava/util/Set;ILjava/lang/String;)V
+	public final fun component1 ()Ldev/befrvnk/composetty/TerminalKey;
+	public final fun component2 ()Ldev/befrvnk/composetty/TerminalKeyAction;
+	public final fun component3 ()Ljava/util/Set;
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Ldev/befrvnk/composetty/TerminalKey;Ldev/befrvnk/composetty/TerminalKeyAction;Ljava/util/Set;ILjava/lang/String;)Ldev/befrvnk/composetty/TerminalKeyEvent;
+	public static synthetic fun copy$default (Ldev/befrvnk/composetty/TerminalKeyEvent;Ldev/befrvnk/composetty/TerminalKey;Ldev/befrvnk/composetty/TerminalKeyAction;Ljava/util/Set;ILjava/lang/String;ILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalKeyEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAction ()Ldev/befrvnk/composetty/TerminalKeyAction;
+	public final fun getKey ()Ldev/befrvnk/composetty/TerminalKey;
+	public final fun getModifiers ()Ljava/util/Set;
+	public final fun getText ()Ljava/lang/String;
+	public final fun getUnshiftedCodepoint ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/befrvnk/composetty/TerminalKeyModifier : java/lang/Enum {
+	public static final field Alt Ldev/befrvnk/composetty/TerminalKeyModifier;
+	public static final field Control Ldev/befrvnk/composetty/TerminalKeyModifier;
+	public static final field Shift Ldev/befrvnk/composetty/TerminalKeyModifier;
+	public static final field Super Ldev/befrvnk/composetty/TerminalKeyModifier;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/befrvnk/composetty/TerminalKeyModifier;
+	public static fun values ()[Ldev/befrvnk/composetty/TerminalKeyModifier;
+}
+
+public final class dev/befrvnk/composetty/TerminalKeyboardAccessoryKt {
+	public static final fun TerminalKeyboardAccessory-eaDK9VM (Ldev/befrvnk/composetty/TerminalSession;Landroidx/compose/ui/Modifier;JJLandroidx/compose/runtime/Composer;II)V
+}
+
+public final class dev/befrvnk/composetty/TerminalKt {
+	public static final field TerminalCellFlagBold I
+	public static final field TerminalCellFlagFaint I
+	public static final field TerminalCellFlagItalic I
+	public static final field TerminalCellFlagSelected I
+	public static final field TerminalCellFlagStrikethrough I
+	public static final field TerminalCellFlagUnderline I
+}
+
+public final class dev/befrvnk/composetty/TerminalRgb {
+	public static final field $stable I
+	public fun <init> (III)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun copy (III)Ldev/befrvnk/composetty/TerminalRgb;
+	public static synthetic fun copy$default (Ldev/befrvnk/composetty/TerminalRgb;IIIILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalRgb;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArgb ()I
+	public final fun getBlue ()I
+	public final fun getGreen ()I
+	public final fun getRed ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/befrvnk/composetty/TerminalSession : java/lang/AutoCloseable {
+	public abstract fun clearSelection ()V
+	public abstract fun getSnapshot ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun paste (Ljava/lang/String;)V
+	public abstract fun receive ([B)V
+	public abstract fun resize (Ldev/befrvnk/composetty/TerminalSize;)V
+	public abstract fun scroll (I)V
+	public abstract fun select (Ldev/befrvnk/composetty/TerminalCellPosition;Ldev/befrvnk/composetty/TerminalCellPosition;)V
+	public abstract fun selectedText ()Ljava/lang/String;
+	public abstract fun sendKey (Ldev/befrvnk/composetty/TerminalKeyEvent;)V
+	public abstract fun sendText (Ljava/lang/String;)V
+	public abstract fun updateTheme (Ldev/befrvnk/composetty/TerminalTheme;)V
+}
+
+public abstract interface class dev/befrvnk/composetty/TerminalSessionFactory {
+	public abstract fun create (Ldev/befrvnk/composetty/TerminalTheme;Ldev/befrvnk/composetty/TerminalTransport;)Ldev/befrvnk/composetty/TerminalSession;
+}
+
+public final class dev/befrvnk/composetty/TerminalSize {
+	public static final field $stable I
+	public fun <init> (IIII)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun copy (IIII)Ldev/befrvnk/composetty/TerminalSize;
+	public static synthetic fun copy$default (Ldev/befrvnk/composetty/TerminalSize;IIIIILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalSize;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCellHeight ()I
+	public final fun getCellWidth ()I
+	public final fun getColumns ()I
+	public final fun getRows ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/befrvnk/composetty/TerminalSnapshot {
+	public static final field $stable I
+	public static final field Companion Ldev/befrvnk/composetty/TerminalSnapshot$Companion;
+	public final fun getCells ()Ldev/befrvnk/composetty/TerminalCells;
+	public final fun getColumns ()I
+	public final fun getCursorColumn ()I
+	public final fun getCursorRow ()I
+	public final fun getCursorStyle ()Ldev/befrvnk/composetty/TerminalCursorStyle;
+	public final fun getCursorVisible ()Z
+	public final fun getCursorWide ()Z
+	public final fun getDefaultBackground ()I
+	public final fun getDefaultForeground ()I
+	public final fun getRows ()I
+}
+
+public final class dev/befrvnk/composetty/TerminalSnapshot$Companion {
+	public final fun create (IIIIZLdev/befrvnk/composetty/TerminalCursorStyle;IILjava/util/List;Z)Ldev/befrvnk/composetty/TerminalSnapshot;
+	public static synthetic fun create$default (Ldev/befrvnk/composetty/TerminalSnapshot$Companion;IIIIZLdev/befrvnk/composetty/TerminalCursorStyle;IILjava/util/List;ZILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalSnapshot;
+	public final fun empty (Ldev/befrvnk/composetty/TerminalTheme;II)Ldev/befrvnk/composetty/TerminalSnapshot;
+	public static synthetic fun empty$default (Ldev/befrvnk/composetty/TerminalSnapshot$Companion;Ldev/befrvnk/composetty/TerminalTheme;IIILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalSnapshot;
+}
+
+public final class dev/befrvnk/composetty/TerminalTextStyle {
+	public static final field $stable I
+	public synthetic fun <init> (Landroidx/compose/ui/text/font/FontFamily;JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Landroidx/compose/ui/text/font/FontFamily;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun component2-XSAIIZE ()J
+	public final fun copy-mpE4wyQ (Landroidx/compose/ui/text/font/FontFamily;J)Ldev/befrvnk/composetty/TerminalTextStyle;
+	public static synthetic fun copy-mpE4wyQ$default (Ldev/befrvnk/composetty/TerminalTextStyle;Landroidx/compose/ui/text/font/FontFamily;JILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalTextStyle;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFontFamily ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getFontSize-XSAIIZE ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/befrvnk/composetty/TerminalTheme {
+	public static final field $stable I
+	public fun <init> (Ldev/befrvnk/composetty/TerminalRgb;Ldev/befrvnk/composetty/TerminalRgb;Ldev/befrvnk/composetty/TerminalRgb;)V
+	public final fun component1 ()Ldev/befrvnk/composetty/TerminalRgb;
+	public final fun component2 ()Ldev/befrvnk/composetty/TerminalRgb;
+	public final fun component3 ()Ldev/befrvnk/composetty/TerminalRgb;
+	public final fun copy (Ldev/befrvnk/composetty/TerminalRgb;Ldev/befrvnk/composetty/TerminalRgb;Ldev/befrvnk/composetty/TerminalRgb;)Ldev/befrvnk/composetty/TerminalTheme;
+	public static synthetic fun copy$default (Ldev/befrvnk/composetty/TerminalTheme;Ldev/befrvnk/composetty/TerminalRgb;Ldev/befrvnk/composetty/TerminalRgb;Ldev/befrvnk/composetty/TerminalRgb;ILjava/lang/Object;)Ldev/befrvnk/composetty/TerminalTheme;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBackground ()Ldev/befrvnk/composetty/TerminalRgb;
+	public final fun getCursor ()Ldev/befrvnk/composetty/TerminalRgb;
+	public final fun getForeground ()Ldev/befrvnk/composetty/TerminalRgb;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/befrvnk/composetty/TerminalTransport {
+	public abstract fun resize (Ldev/befrvnk/composetty/TerminalSize;)V
+	public abstract fun write ([B)V
+}
+

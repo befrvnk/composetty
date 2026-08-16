@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            platform: macos-arm64
+          - os: macos-15-intel
+            platform: macos-x86_64
+          - os: ubuntu-24.04-arm
+            platform: linux-arm64
+          - os: ubuntu-24.04
+            platform: linux-x86_64
+    name: Check ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: cachix/install-nix-action@b4b293eae0b79aac8a161bb32925a5508c9cca93 # v31
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: devenv
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: ghostty
+      - name: Install devenv
+        run: nix profile add nixpkgs#devenv
+      - name: Build and test
+        if: matrix.platform != 'linux-arm64'
+        run: devenv shell -- ./gradlew clean check --no-daemon
+      - name: Verify standalone published consumer
+        if: matrix.platform == 'macos-arm64' || matrix.platform == 'linux-x86_64'
+        run: devenv shell -- ./gradlew consumerSmokeTest --no-daemon
+      - name: Build iOS SwiftUI sample
+        if: matrix.platform == 'macos-arm64'
+        run: samples/ios/check.sh
+      - name: Build Linux arm64 native bridge
+        if: matrix.platform == 'linux-arm64'
+        run: devenv build outputs.native
+      - name: Assemble Android artifacts, device tests, and sample
+        if: matrix.platform == 'linux-x86_64'
+        run: >-
+          devenv shell -- ./gradlew assemble assembleAndroidTest
+          :samples:android:assembleDebug --no-daemon
+      - name: Test Android x86-64 native library in an emulator
+        if: matrix.platform == 'linux-x86_64'
+        run: |
+          sudo chmod 666 /dev/kvm
+          export NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE=1
+          runner="$(devenv build -q outputs.androidX86Test | sed -n 's/.*: "\(.*\)"/\1/p')"
+          test -x "$runner/bin/composetty-android-x86-test"
+          "$runner/bin/composetty-android-x86-test"

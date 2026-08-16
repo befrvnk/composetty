@@ -1,0 +1,15 @@
+.android/
+.devenv/
+.direnv/
+.gradle/
+.kotlin/
+.pre-commit-config.yaml
+build/
+release-native-resources/
+release-native-bundles/
+local.properties
+result
+result-*
+*.iml
+.idea/
+.DS_Store

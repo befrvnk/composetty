@@ -1,0 +1,19 @@
+inputs:
+  nixpkgs:
+    url: github:NixOS/nixpkgs/nixos-unstable
+  ghostty:
+    url: github:ghostty-org/ghostty/22d13172cde98a0a4dda05d3d6a3fcb0dd8ed018
+  git-hooks:
+    url: github:cachix/git-hooks.nix
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
+  android-sdk:
+    url: github:befrvnk/devenv-android-sdk
+    flake: false
+
+nixpkgs:
+  allow_unfree: true
+
+secretspec:
+  enable: false

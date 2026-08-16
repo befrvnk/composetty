@@ -1,0 +1,136 @@
+name: Publish release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing signed release tag to build and upload
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.release.outputs.tag }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag }}
+      - name: Derive and validate version
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='${{ inputs.tag }}'
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)[0-9]+)?$ ]]
+          test "$(git describe --tags --exact-match HEAD)" = "$tag"
+          version="${tag#v}"
+          grep -F "## [$version]" CHANGELOG.md >/dev/null
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  native:
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            platform: macos-arm64
+          - os: macos-15-intel
+            platform: macos-x86_64
+          - os: ubuntu-24.04-arm
+            platform: linux-arm64
+          - os: ubuntu-24.04
+            platform: linux-x86_64
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.validate.outputs.tag }}
+      - uses: cachix/install-nix-action@b4b293eae0b79aac8a161bb32925a5508c9cca93 # v31
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: devenv
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: ghostty
+      - name: Install devenv
+        run: nix profile add nixpkgs#devenv
+      - name: Test native integration
+        if: matrix.platform != 'linux-arm64'
+        run: devenv shell -- ./gradlew test --no-daemon
+      - name: Export native Maven resources
+        run: devenv shell -- native-export artifact
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: native-${{ matrix.platform }}
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: [validate, native]
+    runs-on: macos-15
+    timeout-minutes: 90
+    environment: maven-central
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.validate.outputs.tag }}
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          pattern: native-*
+          path: release-native-resources
+          merge-multiple: true
+      - uses: cachix/install-nix-action@b4b293eae0b79aac8a161bb32925a5508c9cca93 # v31
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: devenv
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: ghostty
+      - name: Install devenv
+        run: nix profile add nixpkgs#devenv
+      - name: Load Maven Central and signing credentials
+        uses: 1Password/load-secrets-action@4a8d23b8021e62998e4c050a53028a03d1284b26 # v4
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: op://Publish/Sonatype Token Composetty/username
+          ORG_GRADLE_PROJECT_mavenCentralPassword: op://Publish/Sonatype Token Composetty/password
+          ORG_GRADLE_PROJECT_signingInMemoryKey: op://Publish/Maven Central GPG/private PGP key
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: op://Publish/Maven Central GPG/passphrase
+      - name: Verify release artifacts and upload deployment
+        env:
+          ORG_GRADLE_PROJECT_VERSION_NAME: ${{ needs.validate.outputs.version }}
+        run: >-
+          devenv shell -- ./gradlew
+          -Pcomposetty.nativeResources="$GITHUB_WORKSPACE/release-native-resources"
+          -PconfirmMavenCentralUpload="${{ needs.validate.outputs.version }}"
+          releaseUpload --no-daemon
+      - name: Record manual release instructions
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          {
+            echo "### Maven Central deployment uploaded"
+            echo
+            echo "Version \`$VERSION\` was uploaded and left unpublished for manual inspection."
+            echo "Validate and publish it in the Maven Central Portal, then create the matching GitHub release."
+          } >> "$GITHUB_STEP_SUMMARY"

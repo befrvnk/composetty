@@ -1,0 +1,6 @@
+COMPOSETTY_1.0 {
+  global:
+    JNI_OnLoad;
+  local:
+    *;
+};
