@@ -69,12 +69,27 @@ jobs:
         with:
           name: ghostty
       - name: Install devenv
+        if: matrix.platform != 'macos-x86_64'
         run: nix profile add nixpkgs#devenv
+      - name: Install devenv for Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: nix profile add github:NixOS/nixpkgs/nixpkgs-26.05-darwin#devenv
       - name: Test native integration
-        if: matrix.platform != 'linux-arm64'
+        if: matrix.platform != 'linux-arm64' && matrix.platform != 'macos-x86_64'
         run: devenv shell -- ./gradlew test --no-daemon
+      - name: Test native integration on Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: >-
+          devenv shell --override-input nixpkgs
+          github:NixOS/nixpkgs/nixpkgs-26.05-darwin -- ./gradlew test --no-daemon
       - name: Export native Maven resources
+        if: matrix.platform != 'macos-x86_64'
         run: devenv shell -- native-export artifact
+      - name: Export native Maven resources on Intel macOS
+        if: matrix.platform == 'macos-x86_64'
+        run: >-
+          devenv shell --override-input nixpkgs
+          github:NixOS/nixpkgs/nixpkgs-26.05-darwin -- native-export artifact
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: native-${{ matrix.platform }}
