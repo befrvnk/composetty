@@ -187,7 +187,7 @@ let
         cmdLineToolsVersion = "20.0";
         platformToolsVersion = "37.0.0";
         buildToolsVersions = [ "36.0.0" ];
-        platformVersions = [ "36" ];
+        platformVersions = [ "35" "36" ];
         includeEmulator = true;
         includeSources = false;
         includeSystemImages = true;
@@ -234,7 +234,7 @@ let
           echo no | "$sdk/cmdline-tools/20.0/bin/avdmanager" create avd \
             --force \
             --name composetty-x86_64 \
-            --package 'system-images;android-36;google_apis;x86_64'
+            --package 'system-images;android-35;google_apis;x86_64'
           "$sdk/emulator/emulator" \
             -avd composetty-x86_64 \
             -no-window \
