@@ -191,7 +191,7 @@ let
         includeEmulator = true;
         includeSources = false;
         includeSystemImages = true;
-        systemImageTypes = [ "google_apis" ];
+        systemImageTypes = [ "google_apis_playstore" ];
         abiVersions = [ "x86_64" ];
         includeNDK = false;
       }).androidsdk
@@ -234,7 +234,7 @@ let
           echo no | "$sdk/cmdline-tools/20.0/bin/avdmanager" create avd \
             --force \
             --name composetty-x86_64 \
-            --package 'system-images;android-35;google_apis;x86_64'
+            --package 'system-images;android-35;google_apis_playstore;x86_64'
           "$sdk/emulator/emulator" \
             -avd composetty-x86_64 \
             -no-window \
