@@ -5,6 +5,10 @@ All notable changes to Composetty are documented in this file. The project follo
 
 ## [Unreleased]
 
+### Fixed
+
+- Include the Composetty and Ghostty licenses and notice in published iOS native artifacts.
+
 ## [0.1.0-alpha01] - 2026-08-12
 
 Initial multiplatform preview release.
