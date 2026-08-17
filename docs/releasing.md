@@ -91,10 +91,10 @@ Central credentials over the network.
    git push origin vVERSION
    ```
 
-A tag push does not automatically publish. For the GitHub fallback, manually dispatch the
-`Publish release candidate` workflow and provide the existing `vVERSION` tag. The workflow checks
-out that exact tag and rejects malformed tags, versions that do not match the tag, and versions
-without a changelog heading.
+Pushing the signed `vVERSION` tag starts the `Publish release candidate` workflow. The workflow
+checks out that exact tag and rejects malformed tags, versions that do not match the tag, and
+versions without a changelog heading. It pauses for approval of the protected `maven-central`
+environment before credentials are loaded or a deployment is uploaded.
 
 ## Inspect and publish
 

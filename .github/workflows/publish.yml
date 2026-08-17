@@ -1,18 +1,15 @@
 name: Publish release candidate
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Existing signed release tag to build and upload
-        required: true
-        type: string
+  push:
+    tags:
+      - "v*"
 
 permissions:
   contents: read
 
 concurrency:
-  group: publish-${{ inputs.tag }}
+  group: publish-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -25,13 +22,14 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
-          ref: ${{ inputs.tag }}
+          ref: ${{ github.ref }}
       - name: Derive and validate version
         id: release
         shell: bash
         run: |
           set -euo pipefail
-          tag='${{ inputs.tag }}'
+          test "$GITHUB_REF_TYPE" = tag
+          tag="$GITHUB_REF_NAME"
           [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)[0-9]+)?$ ]]
           test "$(git describe --tags --exact-match HEAD)" = "$tag"
           version="${tag#v}"
