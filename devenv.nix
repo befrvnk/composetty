@@ -68,6 +68,12 @@ let
             -Wl,-z,relro \
             -Wl,-z,now \
             -o ${libraryName}
+          ${pkgs.binutils}/bin/strip --strip-unneeded ${libraryName}
+          if ${pkgs.binutils}/bin/readelf --sections --wide ${libraryName} \
+            | grep -Eq '\.(debug_|symtab)'; then
+            echo "Release library still contains debug or static symbol sections" >&2
+            exit 1
+          fi
           runHook postBuild
         '';
 
