@@ -1,13 +1,21 @@
 import java.io.File
+import java.util.zip.ZipFile
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.api.tasks.testing.Test
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -53,6 +61,26 @@ abstract class ConfirmMavenCentralUpload : DefaultTask() {
         check(confirmation.get() == value) {
             "Refusing to upload to Maven Central. Pass " +
                 "-PconfirmMavenCentralUpload=$value to confirm this user-managed deployment."
+        }
+    }
+}
+
+abstract class VerifyLegalArchives : DefaultTask() {
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NAME_ONLY)
+    abstract val archives: ConfigurableFileCollection
+
+    @get:Input abstract val requiredEntries: ListProperty<String>
+
+    @TaskAction
+    fun verify() {
+        archives.files.forEach { archive ->
+            ZipFile(archive).use { zip ->
+                val missing = requiredEntries.get().filter { zip.getEntry(it) == null }
+                check(missing.isEmpty()) {
+                    "Missing legal resources from ${archive.name}:\n${missing.joinToString("\n")}"
+                }
+            }
         }
     }
 }
@@ -223,17 +251,47 @@ tasks.named<ProcessResources>("jvmProcessResources") {
     dirPermissions { unix("rwxr-xr-x") }
 }
 
-if (iosEnabled) {
-    listOf("iosArm64ProcessResources", "iosSimulatorArm64ProcessResources").forEach { taskName ->
-        tasks.named<ProcessResources>(taskName) {
-            from(layout.projectDirectory.file("LICENSE")) { into("META-INF") }
-            from(layout.projectDirectory.file("NOTICE")) { into("META-INF") }
-            from(layout.projectDirectory.file("src/jvmMain/resources/META-INF/LICENSE-ghostty")) {
-                into("META-INF")
-            }
+val iosLegalResources = layout.buildDirectory.dir("generated/iosLegalResources")
+val prepareIosLegalResources =
+    tasks.register<Sync>("prepareIosLegalResources") {
+        into(iosLegalResources)
+        from(layout.projectDirectory.file("LICENSE")) {
+            into("META-INF")
+            rename { "LICENSE-composetty" }
+        }
+        from(layout.projectDirectory.file("NOTICE")) {
+            into("META-INF")
+            rename { "NOTICE-composetty" }
+        }
+        from(layout.projectDirectory.file("src/jvmMain/resources/META-INF/LICENSE-ghostty")) {
+            into("META-INF")
         }
     }
+
+val iosLegalArchives = mutableListOf<TaskProvider<Zip>>()
+if (iosEnabled) {
+    listOf("iosArm64", "iosSimulatorArm64").forEach { targetName ->
+        iosLegalArchives +=
+            tasks.named<Zip>("${targetName}Cinterop-ghosttyKlib") {
+                from(prepareIosLegalResources) { into("default/resources") }
+            }
+    }
 }
+
+val verifyIosLegalArtifacts =
+    tasks.register<VerifyLegalArchives>("verifyIosLegalArtifacts") {
+        group = "verification"
+        description = "Verifies legal resources in the published iOS cinterop KLIBs"
+        enabled = iosEnabled
+        archives.from(iosLegalArchives)
+        requiredEntries.set(
+            listOf(
+                "default/resources/META-INF/LICENSE-composetty",
+                "default/resources/META-INF/LICENSE-ghostty",
+                "default/resources/META-INF/NOTICE-composetty",
+            )
+        )
+    }
 
 tasks.named<Test>("jvmTest") { useJUnit() }
 
@@ -369,7 +427,11 @@ val verifyIosNativeResources =
     }
 
 tasks.named("check") {
-    dependsOn(verifyAndroidNativeResources, verifyIosNativeResources)
+    dependsOn(
+        verifyAndroidNativeResources,
+        verifyIosNativeResources,
+        verifyIosLegalArtifacts,
+    )
 }
 
 tasks
@@ -380,6 +442,7 @@ tasks
             verifyReleaseNativeResources,
             verifyAndroidNativeResources,
             verifyIosNativeResources,
+            verifyIosLegalArtifacts,
         )
     }
 
