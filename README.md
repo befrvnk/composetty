@@ -202,8 +202,8 @@ deployment; both are usable locally and the latter is also invoked by GitHub Act
 versions are derived from signed `vVERSION` tags and must have a matching `CHANGELOG.md` section. The protected
 `maven-central` GitHub environment resolves Central and in-memory OpenPGP credentials from
 1Password, uploads a deployment for manual inspection, and deliberately leaves final publication to
-a maintainer in the Central Portal. Tag pushes do not trigger publishing; the workflow is an
-explicitly dispatched fallback for the same locally runnable Gradle task. See
+a maintainer in the Central Portal. Pushing a signed release tag triggers the same locally runnable
+Gradle task after approval of the protected GitHub environment. See
 [`docs/releasing.md`](docs/releasing.md).
 
 ## License
