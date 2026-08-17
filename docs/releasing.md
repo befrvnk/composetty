@@ -110,8 +110,8 @@ The deployment remains unpublished. In the Central Portal:
 
 1. Confirm validation succeeded.
 2. Inspect every publication and signature.
-3. Confirm JVM resources, Android AAR libraries, iOS KLIBs, source jars, POMs, checksums, licenses,
-   and notices are present.
+3. Confirm JVM resources, Android AAR libraries, iOS KLIBs, source jars, generated Dokka API
+   documentation JARs, POMs, checksums, licenses, and notices are present.
 4. Publish the deployment manually.
 5. Wait for the artifacts to become available from Maven Central.
 6. Re-run the standalone consumer against the Central repository if practical.

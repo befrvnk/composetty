@@ -5,6 +5,10 @@ All notable changes to Composetty are documented in this file. The project follo
 
 ## [Unreleased]
 
+### Changed
+
+- Publish generated Dokka API documentation instead of placeholder documentation JARs.
+
 ### Fixed
 
 - Include the Composetty and Ghostty licenses and notice in published iOS native artifacts.
