@@ -1,4 +1,5 @@
 import java.io.File
+import java.net.URI
 import java.util.zip.ZipFile
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
@@ -65,20 +66,26 @@ abstract class ConfirmMavenCentralUpload : DefaultTask() {
     }
 }
 
-abstract class VerifyLegalArchives : DefaultTask() {
+abstract class VerifyArchiveEntries : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.NAME_ONLY)
     abstract val archives: ConfigurableFileCollection
+
+    @get:Input abstract val expectedArchiveCount: Property<Int>
 
     @get:Input abstract val requiredEntries: ListProperty<String>
 
     @TaskAction
     fun verify() {
-        archives.files.forEach { archive ->
+        val archiveFiles = archives.files
+        check(archiveFiles.size == expectedArchiveCount.get()) {
+            "Expected ${expectedArchiveCount.get()} archives, found ${archiveFiles.size}"
+        }
+        archiveFiles.forEach { archive ->
             ZipFile(archive).use { zip ->
                 val missing = requiredEntries.get().filter { zip.getEntry(it) == null }
                 check(missing.isEmpty()) {
-                    "Missing legal resources from ${archive.name}:\n${missing.joinToString("\n")}"
+                    "Missing required entries from ${archive.name}:\n${missing.joinToString("\n")}"
                 }
             }
         }
@@ -90,6 +97,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose)
+    alias(libs.plugins.dokka)
     alias(libs.plugins.maven.publish)
 }
 
@@ -196,6 +204,20 @@ kotlin {
     }
 }
 
+val documentationSourceRevision =
+    if (version.toString().endsWith("-SNAPSHOT")) "main" else "v$version"
+dokka {
+    dokkaSourceSets.configureEach {
+        sourceLink {
+            localDirectory.set(layout.projectDirectory)
+            remoteUrl.set(
+                URI("https://github.com/befrvnk/composetty/blob/$documentationSourceRevision")
+            )
+            remoteLineSuffix.set("#L")
+        }
+    }
+}
+
 val nativeResources =
     providers
         .gradleProperty("composetty.nativeResources")
@@ -279,16 +301,42 @@ if (iosEnabled) {
 }
 
 val verifyIosLegalArtifacts =
-    tasks.register<VerifyLegalArchives>("verifyIosLegalArtifacts") {
+    tasks.register<VerifyArchiveEntries>("verifyIosLegalArtifacts") {
         group = "verification"
         description = "Verifies legal resources in the published iOS cinterop KLIBs"
         enabled = iosEnabled
         archives.from(iosLegalArchives)
+        expectedArchiveCount.set(2)
         requiredEntries.set(
             listOf(
                 "default/resources/META-INF/LICENSE-composetty",
                 "default/resources/META-INF/LICENSE-ghostty",
                 "default/resources/META-INF/NOTICE-composetty",
+            )
+        )
+    }
+
+val documentationArchiveTaskNames =
+    buildList {
+        add("kotlinMultiplatformDokkaJavadocJar")
+        add("jvmDokkaJavadocJar")
+        add("androidDokkaJavadocJar")
+        if (iosEnabled) {
+            add("iosArm64DokkaJavadocJar")
+            add("iosSimulatorArm64DokkaJavadocJar")
+        }
+    }
+val verifyDocumentationArtifacts =
+    tasks.register<VerifyArchiveEntries>("verifyDocumentationArtifacts") {
+        group = "verification"
+        description = "Verifies generated API pages in every published documentation JAR"
+        archives.from(tasks.matching { it.name in documentationArchiveTaskNames })
+        expectedArchiveCount.set(if (iosEnabled) 5 else 3)
+        requiredEntries.set(
+            listOf(
+                "index.html",
+                "composetty/dev.befrvnk.composetty/index.html",
+                "composetty/dev.befrvnk.composetty/-terminal-session/index.html",
             )
         )
     }
@@ -429,6 +477,7 @@ val verifyIosNativeResources =
 tasks.named("check") {
     dependsOn(
         verifyAndroidNativeResources,
+        verifyDocumentationArtifacts,
         verifyIosNativeResources,
         verifyIosLegalArtifacts,
     )
@@ -441,6 +490,7 @@ tasks
             verifyReleaseVersion,
             verifyReleaseNativeResources,
             verifyAndroidNativeResources,
+            verifyDocumentationArtifacts,
             verifyIosNativeResources,
             verifyIosLegalArtifacts,
         )

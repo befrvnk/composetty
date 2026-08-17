@@ -123,6 +123,9 @@ gw check
 # Publish to an isolated repository and test a standalone KMP consumer
 gw consumerSmokeTest
 
+# Generate the API documentation published in documentation JARs
+gw dokkaGenerate
+
 # Build native outputs
 devenv build outputs.native
 devenv build outputs.androidNative
