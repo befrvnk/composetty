@@ -5,6 +5,10 @@ All notable changes to Composetty are documented in this file. The project follo
 
 ## [Unreleased]
 
+## [0.1.0-alpha02] - 2026-08-17
+
+Release packaging follow-up.
+
 ### Changed
 
 - Publish generated Dokka API documentation instead of placeholder documentation JARs.
@@ -41,5 +45,6 @@ Initial multiplatform preview release.
 - Hyperlinks, terminal mouse reporting, and Kitty graphics are not rendered.
 - Windows desktop is not supported.
 
-[Unreleased]: https://github.com/befrvnk/composetty/compare/v0.1.0-alpha01...HEAD
+[Unreleased]: https://github.com/befrvnk/composetty/compare/v0.1.0-alpha02...HEAD
+[0.1.0-alpha02]: https://github.com/befrvnk/composetty/compare/v0.1.0-alpha01...v0.1.0-alpha02
 [0.1.0-alpha01]: https://github.com/befrvnk/composetty/releases/tag/v0.1.0-alpha01
