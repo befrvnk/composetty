@@ -102,55 +102,17 @@ kotlin {
 ## Remote Terminal
 
 Use `GhosttyTerminalSessionFactory` when input and output come from SSH, a WebSocket, or another
-consumer-owned connection. The following application-owned interface represents the small part of a
-connection that Composetty needs. Adapt your network client's API to this shape, then implement
-`TerminalTransport` as the outbound half:
+consumer-owned connection. The tested [remote transport sample](../samples/remote) defines an
+application-owned `TerminalConnection` boundary and `RemoteTransport` adapter. Adapt your network
+client to that shape, then use its `RemoteTerminal` composable.
 
 ```kotlin
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.weight
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import dev.befrvnk.composetty.GhosttyTerminal
-import dev.befrvnk.composetty.GhosttyTerminalSessionFactory
-import dev.befrvnk.composetty.TerminalKeyboardAccessory
-import dev.befrvnk.composetty.TerminalRgb
-import dev.befrvnk.composetty.TerminalSize
-import dev.befrvnk.composetty.TerminalTheme
-import dev.befrvnk.composetty.TerminalTransport
-import kotlinx.coroutines.flow.Flow
-
-interface TerminalConnection {
-    val output: Flow<ByteArray>
-
-    fun enqueueInput(bytes: ByteArray)
-
-    fun enqueueResize(columns: Int, rows: Int, pixelWidth: Int, pixelHeight: Int)
-}
-
-class RemoteTransport(private val connection: TerminalConnection) : TerminalTransport {
-    override fun write(bytes: ByteArray) {
-        connection.enqueueInput(bytes)
-    }
-
-    override fun resize(size: TerminalSize) {
-        connection.enqueueResize(
-            columns = size.columns,
-            rows = size.rows,
-            pixelWidth = size.columns * size.cellWidth,
-            pixelHeight = size.rows * size.cellHeight,
-        )
-    }
-}
+RemoteTerminal(connection = sshConnection)
 ```
 
-`TerminalConnection` is an example application interface, not a Composetty API. Its implementation
-should queue outbound writes for a coroutine or I/O worker. Do not perform suspending or blocking
-I/O directly in `write` or `resize`.
+`TerminalConnection` is an application interface, not a Composetty API. Its implementation should
+queue outbound writes for a coroutine or I/O worker. Do not perform suspending or blocking I/O
+directly in `write` or `resize`.
 
 ### Byte Array Ownership
 
@@ -158,42 +120,6 @@ I/O directly in `write` or `resize`.
 adapter may reuse its inbound buffer after the call returns. In contrast, a `TerminalTransport.write`
 implementation may retain the array it receives. Queue that exact array only when the connection's
 outbound writer owns it; otherwise copy it before returning from `write`.
-
-Create the session and connect the inbound output flow in a composable. Keep the session stable for
-the lifetime of its transport, and always close it when it leaves composition:
-
-```kotlin
-@Composable
-fun RemoteTerminal(connection: TerminalConnection) {
-    val theme = remember {
-        TerminalTheme(
-            foreground = TerminalRgb(230, 230, 230),
-            background = TerminalRgb(25, 25, 25),
-            cursor = TerminalRgb(230, 230, 230),
-        )
-    }
-    val transport = remember(connection) { RemoteTransport(connection) }
-    val session = remember(transport) {
-        GhosttyTerminalSessionFactory().create(theme, transport)
-    }
-
-    LaunchedEffect(session, connection) {
-        connection.output.collect { bytes -> session.receive(bytes) }
-    }
-    DisposableEffect(session) {
-        onDispose(session::close)
-    }
-
-    Column(Modifier.fillMaxSize()) {
-        GhosttyTerminal(
-            session = session,
-            theme = theme,
-            modifier = Modifier.weight(1f),
-        )
-        TerminalKeyboardAccessory(session)
-    }
-}
-```
 
 The transport callbacks run while the session serializes terminal state. They must return promptly
 and must not synchronously call `TerminalSession` methods, including `receive`. Feed received bytes

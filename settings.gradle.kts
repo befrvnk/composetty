@@ -17,6 +17,7 @@ dependencyResolutionManagement {
 rootProject.name = "composetty"
 
 include(":samples:android")
+include(":samples:remote")
 
 if (providers.environmentVariable("COMPOSETTY_IOS_NATIVE").isPresent) {
     include(":samples:ios")

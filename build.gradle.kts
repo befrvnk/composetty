@@ -476,6 +476,7 @@ val verifyIosNativeResources =
 
 tasks.named("check") {
     dependsOn(
+        ":samples:remote:check",
         verifyAndroidNativeResources,
         verifyDocumentationArtifacts,
         verifyIosNativeResources,
