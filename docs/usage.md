@@ -161,9 +161,20 @@ or remote connection; close that resource separately when the connection ends.
 ## Local Shell On JVM Desktop
 
 On supported JVM desktop hosts, `LocalPtyTerminalSessionFactory` starts the user's login shell in a
-working directory and connects it to a Pty4J pseudo-terminal:
+working directory and connects it to a Pty4J pseudo-terminal. Because the factory is JVM-only, put
+this code in your application's `jvmMain` source set:
 
 ```kotlin
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import dev.befrvnk.composetty.GhosttyTerminal
+import dev.befrvnk.composetty.LocalPtyTerminalSessionFactory
+import dev.befrvnk.composetty.TerminalRgb
+import dev.befrvnk.composetty.TerminalTheme
+
 @Composable
 fun LocalTerminal(workingDirectory: String) {
     val theme = remember { darkTerminalTheme() }
