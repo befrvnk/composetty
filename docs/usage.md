@@ -22,6 +22,7 @@ process lifetime.
 - [API Responsibilities](#api-responsibilities)
 - [Input, Clipboard, And Focus](#input-clipboard-and-focus)
 - [Lifecycle Checklist](#lifecycle-checklist)
+- [Replacing Connections And Tabs](#replacing-connections-and-tabs)
 - [Troubleshooting](#troubleshooting)
 - [Current Limitations](#current-limitations)
 - [Samples And API Reference](#samples-and-api-reference)
@@ -315,6 +316,18 @@ the completed selection is copied to the platform clipboard. Tapping clears an e
 - Close the session with `DisposableEffect` or the owner lifecycle.
 - Close remote connections independently, because a transport-neutral session does not own them.
 - Use `paste`, not `sendText`, for clipboard data.
+
+## Replacing Connections And Tabs
+
+The remote example keys its transport with `connection` and its session with `transport`. When the
+connection instance changes, Compose cancels the old output collector, disposes and closes the old
+session, and creates a session for the replacement connection. Keep those keys aligned with the
+identity of the remote terminal, rather than with changing UI state such as a title or theme.
+
+For terminal tabs, render one `RemoteTerminal` per live connection and use a stable terminal ID as
+the item key. A tab that remains composed keeps its session and scrollback. Closing a tab should
+remove its composable, close the associated remote connection in application code, and allow the
+`DisposableEffect` to close the session.
 
 ## Troubleshooting
 
