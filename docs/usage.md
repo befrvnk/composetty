@@ -40,9 +40,16 @@ kotlin {
 The published artifacts package their required native libraries. Applications do not need a local
 Ghostty installation, Nix, Zig, or a C compiler.
 
-Current targets are Android (API 26+), iOS 14+ on arm64 devices and arm64 simulators, and JVM
-desktop on macOS or Linux for arm64 and x86-64. Windows is not supported. `LocalPtyTerminalSessionFactory`
-is JVM-only; use `GhosttyTerminalSessionFactory` with a transport on every target.
+## Compatibility
+
+| Target | Supported environment | Local shell | Remote transport |
+| --- | --- | --- | --- |
+| Android | API 26+ on arm64-v8a and x86_64 | No | Yes |
+| iOS | iOS 14+ on arm64 devices and arm64 simulators | No | Yes |
+| JVM desktop | macOS and Linux on arm64 and x86-64 | Yes | Yes |
+
+Windows is not supported. `LocalPtyTerminalSessionFactory` is JVM-only; use
+`GhosttyTerminalSessionFactory` with a transport on every target.
 
 ## Remote Terminal
 
