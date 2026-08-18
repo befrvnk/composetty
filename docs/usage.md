@@ -152,6 +152,13 @@ class RemoteTransport(private val connection: TerminalConnection) : TerminalTran
 should queue outbound writes for a coroutine or I/O worker. Do not perform suspending or blocking
 I/O directly in `write` or `resize`.
 
+### Byte Array Ownership
+
+`session.receive(bytes)` consumes its byte array synchronously and does not retain it, so a network
+adapter may reuse its inbound buffer after the call returns. In contrast, a `TerminalTransport.write`
+implementation may retain the array it receives. Queue that exact array only when the connection's
+outbound writer owns it; otherwise copy it before returning from `write`.
+
 Create the session and connect the inbound output flow in a composable. Keep the session stable for
 the lifetime of its transport, and always close it when it leaves composition:
 
