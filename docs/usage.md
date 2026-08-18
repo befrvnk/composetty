@@ -20,6 +20,7 @@ process lifetime.
 - [Local Shell On JVM Desktop](#local-shell-on-jvm-desktop)
 - [Theming And Text Styling](#theming-and-text-styling)
 - [API Responsibilities](#api-responsibilities)
+- [Custom Rendering](#custom-rendering)
 - [Input, Clipboard, And Focus](#input-clipboard-and-focus)
 - [Lifecycle Checklist](#lifecycle-checklist)
 - [Replacing Connections And Tabs](#replacing-connections-and-tabs)
@@ -296,6 +297,20 @@ bounded size, typically `Modifier.fillMaxSize()` or `Modifier.weight(1f)`.
 The composable calls `updateTheme` when its `theme` changes. Pass the same theme used to create the
 session initially, then pass an updated value whenever your application changes themes. Customize
 the terminal font with `TerminalTextStyle(fontFamily = ..., fontSize = ...)`.
+
+## Custom Rendering
+
+`TerminalSession.snapshot` is a `StateFlow<TerminalSnapshot>`, so applications can render a
+terminal with another UI toolkit or a specialized Compose presentation. A snapshot contains a
+row-major `TerminalCells` grid, cursor state, and default colors. For a cell at `(column, row)`,
+use the index `row * snapshot.columns + column`; skip `WideSpacerTail` and `WideSpacerHead` cells
+when drawing double-width graphemes.
+
+Custom renderers own layout measurement and must call `session.resize` with positive column, row,
+cell-width, and cell-height values. They also own input, selection, scrolling, focus, and clipboard
+behavior. Send committed text through `sendText`, clipboard content through `paste`, and mapped
+physical keys through `sendKey`. Use `GhosttyTerminal` when its built-in Compose input and gesture
+handling meets your application's needs.
 
 ## Input, Clipboard, And Focus
 
