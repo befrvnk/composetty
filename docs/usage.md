@@ -24,6 +24,7 @@ process lifetime.
 - [Input, Clipboard, And Focus](#input-clipboard-and-focus)
 - [Lifecycle Checklist](#lifecycle-checklist)
 - [Replacing Connections And Tabs](#replacing-connections-and-tabs)
+- [Disconnecting And Reconnecting](#disconnecting-and-reconnecting)
 - [Testing Your Integration](#testing-your-integration)
 - [Troubleshooting](#troubleshooting)
 - [Current Limitations](#current-limitations)
@@ -344,6 +345,16 @@ For terminal tabs, render one `RemoteTerminal` per live connection and use a sta
 the item key. A tab that remains composed keeps its session and scrollback. Closing a tab should
 remove its composable, close the associated remote connection in application code, and allow the
 `DisposableEffect` to close the session.
+
+## Disconnecting And Reconnecting
+
+One `TerminalSession` represents one terminal stream. When a remote connection ends, stop feeding
+its output, close the session, and update application state so its terminal composable leaves
+composition. Calls made after `close` return without changing terminal or transport state.
+
+Create a new transport and session after reconnecting, even when the remote host and terminal
+settings are unchanged. Do not reuse a closed session or feed a new connection into an existing
+session: its terminal state, including cursor modes and scrollback, belongs to the old stream.
 
 ## Testing Your Integration
 
