@@ -54,10 +54,37 @@ Windows is not supported. `LocalPtyTerminalSessionFactory` is JVM-only; use
 ## Remote Terminal
 
 Use `GhosttyTerminalSessionFactory` when input and output come from SSH, a WebSocket, or another
-consumer-owned connection. Implement `TerminalTransport` as the outbound half of that connection:
+consumer-owned connection. The following application-owned interface represents the small part of a
+connection that Composetty needs. Adapt your network client's API to this shape, then implement
+`TerminalTransport` as the outbound half:
 
 ```kotlin
-class SshTransport(private val connection: SshConnection) : TerminalTransport {
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.weight
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import dev.befrvnk.composetty.GhosttyTerminal
+import dev.befrvnk.composetty.GhosttyTerminalSessionFactory
+import dev.befrvnk.composetty.TerminalKeyboardAccessory
+import dev.befrvnk.composetty.TerminalRgb
+import dev.befrvnk.composetty.TerminalSize
+import dev.befrvnk.composetty.TerminalTheme
+import dev.befrvnk.composetty.TerminalTransport
+import kotlinx.coroutines.flow.Flow
+
+interface TerminalConnection {
+    val output: Flow<ByteArray>
+
+    fun enqueueInput(bytes: ByteArray)
+
+    fun enqueueResize(columns: Int, rows: Int, pixelWidth: Int, pixelHeight: Int)
+}
+
+class RemoteTransport(private val connection: TerminalConnection) : TerminalTransport {
     override fun write(bytes: ByteArray) {
         connection.enqueueInput(bytes)
     }
@@ -73,16 +100,16 @@ class SshTransport(private val connection: SshConnection) : TerminalTransport {
 }
 ```
 
-`SshConnection` is application-specific pseudocode. It should expose received process output as a
-`Flow<ByteArray>` and queue outbound writes for a coroutine or I/O worker. Do not perform
-suspending or blocking I/O directly in `write` or `resize`.
+`TerminalConnection` is an example application interface, not a Composetty API. Its implementation
+should queue outbound writes for a coroutine or I/O worker. Do not perform suspending or blocking
+I/O directly in `write` or `resize`.
 
 Create the session and connect the inbound output flow in a composable. Keep the session stable for
 the lifetime of its transport, and always close it when it leaves composition:
 
 ```kotlin
 @Composable
-fun RemoteTerminal(connection: SshConnection) {
+fun RemoteTerminal(connection: TerminalConnection) {
     val theme = remember {
         TerminalTheme(
             foreground = TerminalRgb(230, 230, 230),
@@ -90,7 +117,7 @@ fun RemoteTerminal(connection: SshConnection) {
             cursor = TerminalRgb(230, 230, 230),
         )
     }
-    val transport = remember(connection) { SshTransport(connection) }
+    val transport = remember(connection) { RemoteTransport(connection) }
     val session = remember(transport) {
         GhosttyTerminalSessionFactory().create(theme, transport)
     }
