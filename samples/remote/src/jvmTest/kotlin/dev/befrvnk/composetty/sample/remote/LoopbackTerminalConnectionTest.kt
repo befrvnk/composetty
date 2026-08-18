@@ -15,7 +15,7 @@ internal class LoopbackTerminalConnectionTest {
         val transport = RemoteTransport(connection)
         try {
             transport.write("hello".encodeToByteArray())
-            val output = async { connection.output.first() }
+            val output = async { connection.output.first { it.decodeToString() == "hello" } }
             val size = TerminalSize(columns = 100, rows = 30, cellWidth = 8, cellHeight = 16)
             transport.resize(size)
 

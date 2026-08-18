@@ -16,6 +16,7 @@ import dev.befrvnk.composetty.TerminalSize
 import dev.befrvnk.composetty.TerminalTheme
 import dev.befrvnk.composetty.TerminalTransport
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -52,13 +53,23 @@ class LoopbackTerminalConnection(scope: CoroutineScope) : TerminalConnection, Au
     private val mutableOutput = Channel<ByteArray>(Channel.UNLIMITED)
 
     override val output: Flow<ByteArray> = mutableOutput.receiveAsFlow()
+    private val worker: Job
 
     init {
-        scope.launch {
-            for (bytes in input) {
-                mutableOutput.send(echo(bytes))
+        mutableOutput.trySend(
+            (
+                "\u001b[?2027h" +
+                    "Composetty remote transport sample\r\n" +
+                    "Input is queued and echoed asynchronously. Replace this connection with SSH or WebSocket.\r\n\r\n$ "
+            )
+                .encodeToByteArray()
+        )
+        worker =
+            scope.launch {
+                for (bytes in input) {
+                    mutableOutput.send(echo(bytes))
+                }
             }
-        }
     }
 
     override fun enqueueInput(bytes: ByteArray) {
@@ -72,6 +83,7 @@ class LoopbackTerminalConnection(scope: CoroutineScope) : TerminalConnection, Au
     suspend fun nextResize(): TerminalSize = resize.receive()
 
     override fun close() {
+        worker.cancel()
         input.close()
         resize.close()
         mutableOutput.close()

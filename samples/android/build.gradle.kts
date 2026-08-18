@@ -18,6 +18,7 @@ android {
 
 dependencies {
     implementation(project(":"))
+    implementation(project(":samples:remote"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.foundation)
     implementation(libs.compose.runtime)
