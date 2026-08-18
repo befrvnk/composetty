@@ -196,5 +196,37 @@ the completed selection is copied to the platform clipboard. Tapping clears an e
 - Close remote connections independently, because a transport-neutral session does not own them.
 - Use `paste`, not `sendText`, for clipboard data.
 
+## Troubleshooting
+
+### Native Library Does Not Load On JVM Desktop
+
+The published JVM artifact contains native libraries for macOS and Linux on arm64 and x86-64. Check
+that the application is running on one of those operating system and architecture combinations, and
+that the `ghostty-compose` dependency is present in the runtime classpath. Windows is unsupported.
+
+During native bridge development only, set `COMPOSETTY_GHOSTTY_LIBRARY` to the absolute path of a
+compatible `libcomposetty-ghostty` library to override loading the bundled resource. Do not set it
+in a packaged application.
+
+### Android Fails On A Device Or Emulator
+
+Composetty requires Android API 26 or later and packages `arm64-v8a` and `x86_64` JNI libraries.
+Use an arm64 physical device or an x86_64 emulator. An `armeabi-v7a` device or emulator is not
+supported.
+
+### iOS Fails To Link
+
+The published library supports arm64 iPhones and iPads, plus arm64 simulators, with iOS 14 or later.
+An Intel simulator is not supported. Ensure that the consuming Kotlin Multiplatform project declares
+only supported iOS targets and that its final binaries use an iOS 14 deployment target or newer.
+
+### Input Or Output Stops Updating
+
+Call `session.receive` for every received process-output chunk, in the order it arrives. Do not call
+session methods synchronously from `TerminalTransport.write` or `resize`; those callbacks execute
+while terminal state is locked. Instead, enqueue their work for the connection's I/O coroutine or
+worker. Also ensure the session remains alive for the full connection lifetime and is not recreated
+by routine recomposition.
+
 The Android sample in [`samples/android`](../samples/android) is a complete interactive Compose
 example using an echo transport. Replace that transport with the remote adapter used by your app.
