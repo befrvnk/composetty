@@ -18,6 +18,7 @@ process lifetime.
 - [Compatibility](#compatibility)
 - [Remote Terminal](#remote-terminal)
 - [Local Shell On JVM Desktop](#local-shell-on-jvm-desktop)
+- [Theming And Text Styling](#theming-and-text-styling)
 - [API Responsibilities](#api-responsibilities)
 - [Input, Clipboard, And Focus](#input-clipboard-and-focus)
 - [Lifecycle Checklist](#lifecycle-checklist)
@@ -242,6 +243,33 @@ private fun darkTerminalTheme() = TerminalTheme(
 
 The directory must exist. The factory uses the executable path in `SHELL` when available, otherwise
 it chooses `/bin/zsh`, `/bin/bash`, or `/bin/sh`. Closing the session terminates this local process.
+
+## Theming And Text Styling
+
+Create `TerminalTheme` from the default foreground, background, and cursor colors for your app, and
+pass the same value when creating the session and rendering `GhosttyTerminal`. When the value passed
+to `GhosttyTerminal` changes, the composable updates the session's default colors. ANSI colors and
+explicit true-color output still come from the process output.
+
+```kotlin
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
+import dev.befrvnk.composetty.TerminalTextStyle
+
+GhosttyTerminal(
+    session = session,
+    theme = if (isDarkTheme) darkTheme else lightTheme,
+    textStyle = TerminalTextStyle(
+        fontFamily = FontFamily.Monospace,
+        fontSize = 14.sp,
+    ),
+    modifier = Modifier.fillMaxSize(),
+)
+```
+
+`TerminalTextStyle` controls cell measurement as well as rendering. Use a monospace font with the
+glyph coverage required by your terminal workload. Changing the font family or size recalculates
+the cell dimensions and can trigger a remote PTY resize.
 
 ## API Responsibilities
 
