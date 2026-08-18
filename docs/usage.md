@@ -12,6 +12,19 @@ The library renders the terminal, translates keyboard and IME input, sizes the g
 scrollback and selection, and encodes terminal input. Your app owns the remote connection or local
 process lifetime.
 
+## Contents
+
+- [Add The Dependency](#add-the-dependency)
+- [Compatibility](#compatibility)
+- [Remote Terminal](#remote-terminal)
+- [Local Shell On JVM Desktop](#local-shell-on-jvm-desktop)
+- [API Responsibilities](#api-responsibilities)
+- [Input, Clipboard, And Focus](#input-clipboard-and-focus)
+- [Lifecycle Checklist](#lifecycle-checklist)
+- [Troubleshooting](#troubleshooting)
+- [Current Limitations](#current-limitations)
+- [Samples And API Reference](#samples-and-api-reference)
+
 ## Add The Dependency
 
 Composetty will be published as a Kotlin Multiplatform library. Declare it in
