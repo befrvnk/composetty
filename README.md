@@ -45,30 +45,24 @@ dependencies {
 Published artifacts will contain the native libraries. Consumers do not need Nix, Zig, a C
 compiler, or a locally installed Ghostty application.
 
-## Usage
+## Get Started
+
+Composetty renders a `TerminalSession`; your application supplies either a
+`TerminalTransport` for a remote process or, on JVM desktop, a local PTY session. The terminal
+composable manages grid measurement, rendering, keyboard input, touch scrolling, selection, and
+IME text input.
 
 ```kotlin
-val factory = remember { GhosttyTerminalSessionFactory() }
-val transport = remember(connection) {
-    object : TerminalTransport {
-        override fun write(bytes: ByteArray) {
-            connection.enqueueInput(bytes)
-        }
-
-        override fun resize(size: TerminalSize) {
-            connection.enqueueResize(size.columns, size.rows)
-        }
-    }
-}
-val session = remember(transport) {
-    factory.create(
-        initialTheme = TerminalTheme(
-            foreground = TerminalRgb(230, 230, 230),
-            background = TerminalRgb(25, 25, 25),
-            cursor = TerminalRgb(230, 230, 230),
-        ),
-        transport = transport,
+val theme = remember {
+    TerminalTheme(
+        foreground = TerminalRgb(230, 230, 230),
+        background = TerminalRgb(25, 25, 25),
+        cursor = TerminalRgb(230, 230, 230),
     )
+}
+val transport = remember(connection) { connection.asTerminalTransport() }
+val session = remember(transport) {
+    GhosttyTerminalSessionFactory().create(theme, transport)
 }
 
 LaunchedEffect(session, connection) {
@@ -89,16 +83,11 @@ Column(Modifier.fillMaxSize()) {
 }
 ```
 
-`TerminalKeyboardAccessory` is optional and provides Escape, Tab, Ctrl-C, Ctrl-D, arrow, Copy,
-and Paste buttons. Clipboard text should be sent with `session.paste(text)`, which applies Ghostty's
-control-byte filtering and current bracketed-paste mode, rather than `sendText`.
+`TerminalKeyboardAccessory` is optional. It provides Escape, Tab, Ctrl-C, Ctrl-D, arrow, Copy, and
+Paste buttons for software keyboards.
 
-Transport callbacks must return promptly; enqueue data when the underlying connection uses
-suspending I/O. A session owns native terminal state, but it does not own or close the remote
-connection.
-
-Desktop applications can instead create a local shell with
-`LocalPtyTerminalSessionFactory().create(workingDirectory, theme)`.
+See the [integration guide](docs/usage.md) for the transport contract, remote and local-session
+examples, lifecycle ownership, theming, input behavior, and platform support.
 
 The Android sample in `samples/android` uses an echo transport to exercise the software keyboard,
 selection, clipboard actions, accessory keys, and touch scrollback without requiring an SSH server.
