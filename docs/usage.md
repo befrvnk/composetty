@@ -239,5 +239,11 @@ not implemented yet:
 - Marked-text rendering during IME composition
 - Selection handles and selection autoscroll
 
-The Android sample in [`samples/android`](../samples/android) is a complete interactive Compose
-example using an echo transport. Replace that transport with the remote adapter used by your app.
+## Samples And API Reference
+
+The [Android sample](../samples/android) is a complete interactive Compose example using an echo
+transport. The [iOS sample](../samples/ios) embeds the same terminal experience in a SwiftUI
+application. Replace their echo transports with the remote adapter used by your app.
+
+Every published artifact includes generated Dokka API documentation. Open the `*-javadoc.jar` from
+your dependency cache or Maven repository to browse the full public API and its KDoc in a browser.
