@@ -187,6 +187,18 @@ and must not synchronously call `TerminalSession` methods, including `receive`. 
 from a separate connection callback or coroutine, as above. A session does not close its transport
 or remote connection; close that resource separately when the connection ends.
 
+### Resizing A Remote PTY
+
+A new session starts with an 80 by 24 grid. Once `GhosttyTerminal` has a bounded layout, it measures
+its terminal cells and calls `session.resize` when the number of visible columns or rows changes.
+The session updates its emulator and invokes `TerminalTransport.resize` with the new cell grid and
+pixel dimensions. Forward `columns` and `rows` to the remote PTY; forward `pixelWidth` and
+`pixelHeight` only when the remote protocol supports them.
+
+Do not call `session.resize` from a parent layout when using `GhosttyTerminal`, because the
+composable already owns resize measurement. Call it yourself only when rendering a `TerminalSession`
+with a custom terminal view.
+
 ## Local Shell On JVM Desktop
 
 On supported JVM desktop hosts, `LocalPtyTerminalSessionFactory` starts the user's login shell in a
