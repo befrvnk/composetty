@@ -228,5 +228,16 @@ while terminal state is locked. Instead, enqueue their work for the connection's
 worker. Also ensure the session remains alive for the full connection lifetime and is not recreated
 by routine recomposition.
 
+## Current Limitations
+
+Composetty supports terminal output, ANSI and true-color rendering, scrollback, keyboard and IME
+input, selection, clipboard copy and paste, and double-width graphemes. The following features are
+not implemented yet:
+
+- Terminal hyperlinks
+- Kitty graphics protocol images
+- Marked-text rendering during IME composition
+- Selection handles and selection autoscroll
+
 The Android sample in [`samples/android`](../samples/android) is a complete interactive Compose
 example using an echo transport. Replace that transport with the remote adapter used by your app.
