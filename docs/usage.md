@@ -64,6 +64,35 @@ Ghostty installation, Nix, Zig, or a C compiler.
 Windows is not supported. `LocalPtyTerminalSessionFactory` is JVM-only; use
 `GhosttyTerminalSessionFactory` with a transport on every target.
 
+### iOS 14 Deployment Target
+
+Kotlin/Native defaults new iOS binaries to iOS 15. If your application supports iOS 14, override
+the final binary deployment target for each Composetty target:
+
+```kotlin
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
+kotlin {
+    iosArm64()
+    iosSimulatorArm64()
+
+    targets.withType<KotlinNativeTarget>().configureEach {
+        val konanProperty = when (name) {
+            "iosArm64" -> "osVersionMin.ios_arm64"
+            "iosSimulatorArm64" -> "osVersionMin.ios_simulator_arm64"
+            else -> error("Unexpected iOS target: $name")
+        }
+        compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions.freeCompilerArgs.add(
+                    "-Xoverride-konan-properties=$konanProperty=14.0"
+                )
+            }
+        }
+    }
+}
+```
+
 ## Remote Terminal
 
 Use `GhosttyTerminalSessionFactory` when input and output come from SSH, a WebSocket, or another
