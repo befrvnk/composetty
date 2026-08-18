@@ -443,5 +443,5 @@ The [Android sample](../samples/android) is a complete interactive Compose examp
 transport. The [iOS sample](../samples/ios) embeds the same terminal experience in a SwiftUI
 application. Replace their echo transports with the remote adapter used by your app.
 
-Every published artifact includes generated Dokka API documentation. Open the `*-javadoc.jar` from
-your dependency cache or Maven repository to browse the full public API and its KDoc in a browser.
+Browse the generated [API reference](https://befrvnk.github.io/composetty/) for the full public API
+and its KDoc. Every published artifact also includes the same documentation in its `*-javadoc.jar`.

@@ -1,0 +1,39 @@
+name: Publish API documentation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: cachix/install-nix-action@b4b293eae0b79aac8a161bb32925a5508c9cca93 # v31
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: devenv
+      - uses: cachix/cachix-action@02b16339eddcf6ea27126a830c7f1992855cae13 # v17
+        with:
+          name: ghostty
+      - run: nix profile add nixpkgs#devenv
+      - run: devenv shell -- ./gradlew dokkaGeneratePublicationHtml --no-daemon
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/dokka/html
+      - id: deployment
+        uses: actions/deploy-pages@v4
