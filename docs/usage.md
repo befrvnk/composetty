@@ -25,6 +25,7 @@ process lifetime.
 - [Lifecycle Checklist](#lifecycle-checklist)
 - [Replacing Connections And Tabs](#replacing-connections-and-tabs)
 - [Disconnecting And Reconnecting](#disconnecting-and-reconnecting)
+- [Handling Startup Failures](#handling-startup-failures)
 - [Testing Your Integration](#testing-your-integration)
 - [Troubleshooting](#troubleshooting)
 - [Current Limitations](#current-limitations)
@@ -355,6 +356,24 @@ composition. Calls made after `close` return without changing terminal or transp
 Create a new transport and session after reconnecting, even when the remote host and terminal
 settings are unchanged. Do not reuse a closed session or feed a new connection into an existing
 session: its terminal state, including cursor modes and scrollback, belongs to the old stream.
+
+## Handling Startup Failures
+
+Creating a session loads the platform-native terminal library and can throw when the host is
+unsupported, a native library is missing, or native initialization fails. Create the session at an
+application boundary that can show a useful error state, rather than assuming terminal creation
+always succeeds:
+
+```kotlin
+val sessionResult = runCatching {
+    GhosttyTerminalSessionFactory().create(theme, transport)
+}
+```
+
+When creation fails, retain the error for diagnostics, close the application-owned connection, and
+offer an appropriate fallback or retry action. Do not retry in a composition loop; retry only after
+the underlying environment or connection has changed. See [Troubleshooting](#troubleshooting) for
+the supported platforms and native-loading checks.
 
 ## Testing Your Integration
 
