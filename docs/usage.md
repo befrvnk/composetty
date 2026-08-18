@@ -24,6 +24,7 @@ process lifetime.
 - [Input, Clipboard, And Focus](#input-clipboard-and-focus)
 - [Lifecycle Checklist](#lifecycle-checklist)
 - [Replacing Connections And Tabs](#replacing-connections-and-tabs)
+- [Testing Your Integration](#testing-your-integration)
 - [Troubleshooting](#troubleshooting)
 - [Current Limitations](#current-limitations)
 - [Samples And API Reference](#samples-and-api-reference)
@@ -343,6 +344,18 @@ For terminal tabs, render one `RemoteTerminal` per live connection and use a sta
 the item key. A tab that remains composed keeps its session and scrollback. Closing a tab should
 remove its composable, close the associated remote connection in application code, and allow the
 `DisposableEffect` to close the session.
+
+## Testing Your Integration
+
+Test the connection adapter separately from the network client. Use a recording `TerminalTransport`
+to assert that terminal input, paste operations, and `TerminalSize` changes are forwarded to the
+remote protocol. Feed representative output byte chunks into `session.receive` and assert against
+`session.snapshot.value`, including ANSI formatting, Unicode graphemes, and resize behavior.
+
+Keep the adapter test independent of an SSH server or WebSocket endpoint. Test the actual network
+client separately for authentication, reconnects, flow control, and its own ordering guarantees.
+The [Android sample](../samples/android) is useful for manual verification of software-keyboard
+input, scrolling, selection, clipboard actions, and the keyboard accessory.
 
 ## Troubleshooting
 
