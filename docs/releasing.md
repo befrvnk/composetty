@@ -72,7 +72,13 @@ Central credentials over the network.
 2. Decide the version. Supported release forms are `X.Y.Z`, `X.Y.Z-alphaN`, `X.Y.Z-betaN`, and
    `X.Y.Z-rcN`.
 3. Move the relevant notes from `Unreleased` to a dated `## [VERSION]` section in `CHANGELOG.md`.
-4. Run:
+4. Review public documentation:
+    - Confirm the [compatibility matrix](usage.md#compatibility) matches the published targets.
+    - Confirm [current limitations](usage.md#current-limitations) and sample links remain accurate.
+    - Confirm the [remote transport sample](../samples/remote) still builds and its integration
+      guidance matches the public API.
+    - Confirm the hosted [API reference](https://befrvnk.github.io/composetty/) deploys from `main`.
+5. Run:
 
    ```shell
    devenv build outputs.native
@@ -83,8 +89,8 @@ Central credentials over the network.
    devenv shell -- ./gradlew verifyReleaseVersion -PVERSION_NAME=VERSION --no-daemon
    ```
 
-5. Commit the changelog and release preparation.
-6. Create and push an annotated tag:
+6. Commit the changelog and release preparation.
+7. Create and push an annotated tag:
 
    ```shell
    git tag -s vVERSION -m "Composetty VERSION"
