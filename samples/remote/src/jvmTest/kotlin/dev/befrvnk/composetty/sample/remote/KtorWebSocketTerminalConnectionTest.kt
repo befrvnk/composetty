@@ -29,6 +29,7 @@ internal class KtorWebSocketTerminalConnectionTest {
                 install(ServerWebSockets)
                 routing {
                     webSocket("/terminal") {
+                        send(Frame.Text("ignored"))
                         send(Frame.Binary(fin = true, data = "output".encodeToByteArray()))
                         repeat(2) {
                             received.send((incoming.receive() as Frame.Binary).readBytes())
