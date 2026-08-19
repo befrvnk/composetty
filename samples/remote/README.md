@@ -62,6 +62,14 @@ long-lived credentials as terminal input or embed them in the WebSocket URL. The
 authenticate the client, authorize access to the requested terminal session, and enforce per-session
 resource limits before forwarding process input or output.
 
+### Frame sizes and flow control
+
+Keep terminal output frames reasonably sized rather than buffering an entire command result in one
+WebSocket message. Configure Ktor's `WebSockets` plugin `maxFrameSize` to a limit appropriate to
+your service, and enforce matching limits on the server. The connection adapter queues outbound
+input so its callbacks return promptly; the server remains responsible for applying backpressure,
+limiting per-session output, and disconnecting clients that exceed service limits.
+
 ```kotlin
 val connection = KtorWebSocketTerminalConnection.connect(
     scope = scope,
