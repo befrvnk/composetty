@@ -17,7 +17,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 
 internal class KtorWebSocketTerminalConnectionTest {
@@ -48,13 +48,15 @@ internal class KtorWebSocketTerminalConnectionTest {
                     encodeResize = { size -> "resize:${size.columns}x${size.rows}".encodeToByteArray() },
                 )
             try {
-                val output = async { connection.output.first() }
+                val output = async { connection.output.toList() }
                 connection.enqueueInput("input".encodeToByteArray())
                 connection.enqueueResize(TerminalSize(100, 30, 8, 16))
 
-                assertContentEquals("output".encodeToByteArray(), output.await())
                 assertContentEquals("input".encodeToByteArray(), received.receive())
                 assertEquals("resize:100x30", received.receive().decodeToString())
+                val outputFrames = output.await()
+                assertEquals(1, outputFrames.size)
+                assertContentEquals("output".encodeToByteArray(), outputFrames.single())
             } finally {
                 connection.close()
             }
