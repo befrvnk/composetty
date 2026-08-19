@@ -50,9 +50,14 @@ authentication, logging, and the engine in this client:
 
 ```kotlin
 val client = HttpClient(Android) {
-    install(WebSockets)
+    install(WebSockets) {
+        maxFrameSize = 1L * 1024 * 1024
+    }
 }
 ```
+
+The 1 MiB limit is an example; choose a limit that matches the service's maximum terminal-output
+chunk and configure the server with the same bound.
 
 ### Production security
 
