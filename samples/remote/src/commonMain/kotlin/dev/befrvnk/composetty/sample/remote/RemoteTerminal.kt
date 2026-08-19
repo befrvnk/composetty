@@ -108,6 +108,7 @@ fun RemoteTerminal(
     connection: TerminalConnection,
     theme: TerminalTheme = SampleTheme,
     modifier: Modifier = Modifier,
+    showKeyboardAccessory: Boolean = true,
 ) {
     val transport = remember(connection) { RemoteTransport(connection) }
     val session = remember(transport) {
@@ -127,19 +128,26 @@ fun RemoteTerminal(
             theme = theme,
             modifier = Modifier.weight(1f),
         )
-        TerminalKeyboardAccessory(session)
+        if (showKeyboardAccessory) TerminalKeyboardAccessory(session)
     }
 }
 
 @Composable
-fun LoopbackTerminalSample(modifier: Modifier = Modifier) {
+fun LoopbackTerminalSample(
+    modifier: Modifier = Modifier,
+    showKeyboardAccessory: Boolean = true,
+) {
     val scope = rememberCoroutineScope()
     val connection = remember { LoopbackTerminalConnection(scope) }
 
     DisposableEffect(connection) {
         onDispose(connection::close)
     }
-    RemoteTerminal(connection = connection, modifier = modifier.fillMaxSize())
+    RemoteTerminal(
+        connection = connection,
+        modifier = modifier.fillMaxSize(),
+        showKeyboardAccessory = showKeyboardAccessory,
+    )
 }
 
 private val SampleTheme =

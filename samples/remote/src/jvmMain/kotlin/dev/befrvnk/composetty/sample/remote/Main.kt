@@ -9,7 +9,7 @@ public fun main() {
             onCloseRequest = ::exitApplication,
             title = "Composetty remote transport sample",
         ) {
-            LoopbackTerminalSample()
+            LoopbackTerminalSample(showKeyboardAccessory = false)
         }
     }
 }

@@ -7,6 +7,8 @@ echoes it from a coroutine, rather than re-entering the terminal session from `T
 `RemoteTerminal` is the Compose integration point. `LoopbackTerminalSample` is rendered by the
 Android sample. Replace `LoopbackTerminalConnection` with an adapter around an SSH or WebSocket
 client that provides ordered output as `Flow<ByteArray>` and queues input and resize requests.
+The keyboard accessory is enabled for the Android sample and disabled by the JVM launcher, where a
+physical keyboard provides those keys.
 
 Run the interactive JVM desktop sample with:
 

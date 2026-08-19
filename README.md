@@ -97,6 +97,8 @@ Run the same loopback transport as a JVM desktop application with
 
 <img src="docs/images/android-loopback.png" alt="Composetty Android loopback terminal with keyboard accessory" width="360">
 
+<img src="docs/images/desktop-loopback.png" alt="Composetty JVM desktop loopback terminal" width="720">
+
 The SwiftUI application in `samples/ios` exercises the same functionality through an embedded
 Compose framework. The standalone build in `samples/consumer` resolves only the published Maven
 artifacts and verifies JVM native loading, Android APK native packaging, and iOS device/simulator

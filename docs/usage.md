@@ -339,6 +339,12 @@ Set `ANDROID_SERIAL` when more than one device is connected. Review generated me
 to documentation; foreground the sample when prompted after installation. The script dismisses the
 software keyboard before capture and is not run in CI because binary assets should change deliberately.
 
+On macOS, capture the JVM desktop sample with the native window picker:
+
+```shell
+scripts/capture-desktop-sample.sh
+```
+
 ## Troubleshooting
 
 ### Native Library Does Not Load On JVM Desktop

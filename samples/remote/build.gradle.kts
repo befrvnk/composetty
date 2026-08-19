@@ -34,7 +34,10 @@ kotlin {
             implementation(libs.ktor.client.websockets)
         }
         androidMain.dependencies { implementation(libs.ktor.client.android) }
-        jvmMain.dependencies { implementation(libs.ktor.client.cio) }
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.ktor.client.cio)
+        }
         commonTest.dependencies { implementation(kotlin("test")) }
         jvmTest.dependencies {
             implementation(libs.junit)
