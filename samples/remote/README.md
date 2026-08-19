@@ -83,7 +83,7 @@ requirements:
 - Accept binary frames from the client as terminal process input, in order. The adapter sends bytes
   produced by keyboard input, IME commits, paste, and terminal responses unchanged.
 - Define a binary resize message. `encodeResize` is called for every `TerminalSize`; its returned
-  bytes are sent as a binary frame in resize order.
+  bytes are sent as a binary frame in the same order as terminal input.
 - Do not use WebSocket text frames for terminal data. The adapter ignores them.
 - Treat a closed WebSocket as a disconnected terminal stream. Close the connection and create a new
   one after reconnecting; do not reuse the old `TerminalSession`.

@@ -25,12 +25,10 @@ class KtorWebSocketTerminalConnection private constructor(
     private val scope: CoroutineScope,
     private val encodeResize: (TerminalSize) -> ByteArray,
 ) : TerminalConnection, AutoCloseable {
-    private val input = Channel<ByteArray>(Channel.UNLIMITED)
-    private val resize = Channel<TerminalSize>(Channel.UNLIMITED)
+    private val outbound = Channel<Outbound>(Channel.UNLIMITED)
     private val mutableOutput = Channel<ByteArray>(Channel.UNLIMITED)
     private val reader: Job
     private val writer: Job
-    private val resizeWriter: Job
 
     override val output: Flow<ByteArray> = mutableOutput.receiveAsFlow()
 
@@ -47,30 +45,29 @@ class KtorWebSocketTerminalConnection private constructor(
             }
         writer =
             scope.launch {
-                for (bytes in input) session.send(Frame.Binary(fin = true, data = bytes))
-            }
-        resizeWriter =
-            scope.launch {
-                for (size in resize) {
-                    session.send(Frame.Binary(fin = true, data = encodeResize(size)))
+                for (event in outbound) {
+                    val bytes =
+                        when (event) {
+                            is Outbound.Input -> event.bytes
+                            is Outbound.Resize -> encodeResize(event.size)
+                        }
+                    session.send(Frame.Binary(fin = true, data = bytes))
                 }
             }
     }
 
     override fun enqueueInput(bytes: ByteArray) {
-        input.trySend(bytes.copyOf())
+        outbound.trySend(Outbound.Input(bytes.copyOf()))
     }
 
     override fun enqueueResize(size: TerminalSize) {
-        resize.trySend(size)
+        outbound.trySend(Outbound.Resize(size))
     }
 
     override fun close() {
         reader.cancel()
         writer.cancel()
-        resizeWriter.cancel()
-        input.close()
-        resize.close()
+        outbound.close()
         mutableOutput.close()
         scope.launch { session.close() }
     }
@@ -88,5 +85,11 @@ class KtorWebSocketTerminalConnection private constructor(
                 scope = scope,
                 encodeResize = encodeResize,
             )
+    }
+
+    private sealed interface Outbound {
+        class Input(val bytes: ByteArray) : Outbound
+
+        class Resize(val size: TerminalSize) : Outbound
     }
 }

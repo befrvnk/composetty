@@ -30,6 +30,10 @@ kotlin {
         androidMain.dependencies { implementation(libs.ktor.client.android) }
         jvmMain.dependencies { implementation(libs.ktor.client.cio) }
         commonTest.dependencies { implementation(kotlin("test")) }
-        jvmTest.dependencies { implementation(libs.junit) }
+        jvmTest.dependencies {
+            implementation(libs.junit)
+            implementation(libs.ktor.server.cio)
+            implementation(libs.ktor.server.websockets)
+        }
     }
 }
