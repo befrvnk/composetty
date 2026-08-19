@@ -24,6 +24,8 @@ kotlin {
             implementation(libs.compose.runtime)
             implementation(libs.compose.ui)
             implementation(libs.coroutines.core)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.websockets)
         }
         commonTest.dependencies { implementation(kotlin("test")) }
         jvmTest.dependencies { implementation(libs.junit) }

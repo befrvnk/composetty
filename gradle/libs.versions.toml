@@ -8,6 +8,7 @@ dokka = "2.2.0"
 jna = "5.17.0"
 junit = "4.13.2"
 kotlin = "2.4.10"
+ktor = "3.5.2"
 maven-publish = "0.37.0"
 androidx-test-runner = "1.7.0"
 pty4j = "0.13.12"
@@ -23,6 +24,8 @@ compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 junit = { module = "junit:junit", version.ref = "junit" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
 pty4j = { module = "org.jetbrains.pty4j:pty4j", version.ref = "pty4j" }
 
 [plugins]

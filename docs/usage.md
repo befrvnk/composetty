@@ -110,6 +110,10 @@ client to that shape, then use its `RemoteTerminal` composable.
 RemoteTerminal(connection = sshConnection)
 ```
 
+For a binary WebSocket server, the same sample includes `KtorWebSocketTerminalConnection`. It keeps
+the Ktor `HttpClient` and server-specific resize encoding application-owned while forwarding binary
+input and output frames. See its [Ktor adapter instructions](../samples/remote#ktor-websocket-adapter).
+
 `TerminalConnection` is an application interface, not a Composetty API. Its implementation should
 queue outbound writes for a coroutine or I/O worker. Do not perform suspending or blocking I/O
 directly in `write` or `resize`.
