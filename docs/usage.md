@@ -27,6 +27,7 @@ process lifetime.
 - [Disconnecting And Reconnecting](#disconnecting-and-reconnecting)
 - [Handling Startup Failures](#handling-startup-failures)
 - [Testing Your Integration](#testing-your-integration)
+- [Capture Sample Media](#capture-sample-media)
 - [Troubleshooting](#troubleshooting)
 - [Current Limitations](#current-limitations)
 - [Samples And API Reference](#samples-and-api-reference)
@@ -323,6 +324,20 @@ Keep the adapter test independent of an SSH server or WebSocket endpoint. Test t
 client separately for authentication, reconnects, flow control, and its own ordering guarantees.
 The [Android sample](../samples/android) is useful for manual verification of software-keyboard
 input, scrolling, selection, clipboard actions, and the keyboard accessory.
+
+## Capture Sample Media
+
+Use the checked-in capture script to intentionally refresh the Android screenshot from an
+authorized device. It builds and installs the loopback sample, then writes the deterministic
+welcome state to `docs/images/android-loopback.png`:
+
+```shell
+devenv shell -- scripts/capture-android-sample.sh
+```
+
+Set `ANDROID_SERIAL` when more than one device is connected. Review generated media before adding it
+to documentation; foreground the sample when prompted after installation. The script dismisses the
+software keyboard before capture and is not run in CI because binary assets should change deliberately.
 
 ## Troubleshooting
 

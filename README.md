@@ -94,6 +94,9 @@ The Android sample in `samples/android` uses the asynchronous loopback transport
 and touch scrollback without requiring an SSH server.
 Run the same loopback transport as a JVM desktop application with
 `devenv shell -- ./gradlew :samples:remote:run`.
+
+<img src="docs/images/android-loopback.png" alt="Composetty Android loopback terminal with keyboard accessory" width="360">
+
 The SwiftUI application in `samples/ios` exercises the same functionality through an embedded
 Compose framework. The standalone build in `samples/consumer` resolves only the published Maven
 artifacts and verifies JVM native loading, Android APK native packaging, and iOS device/simulator
