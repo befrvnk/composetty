@@ -24,6 +24,7 @@ internal class KtorWebSocketTerminalConnectionTest {
     @Test
     fun forwardsBinaryOutputAndSerializesInputWithResize() = runBlocking {
         val received = Channel<ByteArray>(Channel.UNLIMITED)
+        val allowReceive = Channel<Unit>(1)
         val server =
             embeddedServer(ServerCIO, port = 0) {
                 install(ServerWebSockets)
@@ -31,6 +32,7 @@ internal class KtorWebSocketTerminalConnectionTest {
                     webSocket("/terminal") {
                         send(Frame.Text("ignored"))
                         send(Frame.Binary(fin = true, data = "output".encodeToByteArray()))
+                        allowReceive.receive()
                         repeat(2) {
                             received.send((incoming.receive() as Frame.Binary).readBytes())
                         }
@@ -49,8 +51,11 @@ internal class KtorWebSocketTerminalConnectionTest {
                 )
             try {
                 val output = async { connection.output.toList() }
-                connection.enqueueInput("input".encodeToByteArray())
+                val input = "input".encodeToByteArray()
+                connection.enqueueInput(input)
+                input[0] = 'X'.code.toByte()
                 connection.enqueueResize(TerminalSize(100, 30, 8, 16))
+                allowReceive.send(Unit)
 
                 assertContentEquals("input".encodeToByteArray(), received.receive())
                 assertEquals("resize:100x30", received.receive().decodeToString())
