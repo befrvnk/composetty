@@ -13,7 +13,8 @@ client that provides ordered output as `Flow<ByteArray>` and queues input and re
 `KtorWebSocketTerminalConnection` is a concrete adapter for a server that uses binary WebSocket
 frames for terminal input and output. It accepts an application-owned `HttpClient`, so an app can
 choose the Ktor engine appropriate to its targets. The terminal resize message format is specific to
-the server; provide it through `encodeResize`.
+the server; provide it through `encodeResize`. This sample compiles the adapter for Android and JVM;
+add an appropriate Ktor engine and target configuration when adapting it to another platform.
 
 Declare Ktor in the consuming application's `gradle/libs.versions.toml`:
 
