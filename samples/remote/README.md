@@ -8,6 +8,12 @@ echoes it from a coroutine, rather than re-entering the terminal session from `T
 Android sample. Replace `LoopbackTerminalConnection` with an adapter around an SSH or WebSocket
 client that provides ordered output as `Flow<ByteArray>` and queues input and resize requests.
 
+Run the interactive JVM desktop sample with:
+
+```shell
+devenv shell -- ./gradlew :samples:remote:run
+```
+
 ## Ktor WebSocket adapter
 
 `KtorWebSocketTerminalConnection` is a concrete adapter for a server that uses binary WebSocket

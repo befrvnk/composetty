@@ -92,6 +92,8 @@ examples, lifecycle ownership, theming, input behavior, and platform support.
 The Android sample in `samples/android` uses the asynchronous loopback transport from
 `samples/remote` to exercise the software keyboard, selection, clipboard actions, accessory keys,
 and touch scrollback without requiring an SSH server.
+Run the same loopback transport as a JVM desktop application with
+`devenv shell -- ./gradlew :samples:remote:run`.
 The SwiftUI application in `samples/ios` exercises the same functionality through an embedded
 Compose framework. The standalone build in `samples/consumer` resolves only the published Maven
 artifacts and verifies JVM native loading, Android APK native packaging, and iOS device/simulator

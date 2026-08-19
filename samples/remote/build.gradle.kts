@@ -7,6 +7,12 @@ plugins {
     alias(libs.plugins.compose)
 }
 
+compose.desktop {
+    application {
+        mainClass = "dev.befrvnk.composetty.sample.remote.MainKt"
+    }
+}
+
 kotlin {
     jvm()
 
