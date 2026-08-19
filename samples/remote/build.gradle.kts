@@ -27,6 +27,8 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.websockets)
         }
+        androidMain.dependencies { implementation(libs.ktor.client.android) }
+        jvmMain.dependencies { implementation(libs.ktor.client.cio) }
         commonTest.dependencies { implementation(kotlin("test")) }
         jvmTest.dependencies { implementation(libs.junit) }
     }

@@ -15,6 +15,45 @@ frames for terminal input and output. It accepts an application-owned `HttpClien
 choose the Ktor engine appropriate to its targets. The terminal resize message format is specific to
 the server; provide it through `encodeResize`.
 
+Declare Ktor in the consuming application's `gradle/libs.versions.toml`:
+
+```toml
+[versions]
+ktor = "3.5.2"
+
+[libraries]
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+```
+
+Add `libs.ktor.client.core` and `libs.ktor.client.websockets` to `commonMain`, then add one engine
+to each platform source set. The sample uses the Android engine for `androidMain` and CIO for
+`jvmMain`:
+
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.websockets)
+        }
+        androidMain.dependencies { implementation(libs.ktor.client.android) }
+        jvmMain.dependencies { implementation(libs.ktor.client.cio) }
+    }
+}
+```
+
+Create the client with the WebSockets plugin installed. Applications can configure timeouts,
+authentication, logging, and the engine in this client:
+
+```kotlin
+val client = HttpClient(Android) {
+    install(WebSockets)
+}
+```
+
 ```kotlin
 val connection = KtorWebSocketTerminalConnection.connect(
     scope = scope,
