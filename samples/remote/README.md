@@ -65,6 +65,21 @@ val connection = KtorWebSocketTerminalConnection.connect(
 
 Close the connection when the terminal ends, then close `client` when no connection shares it.
 
+### Protocol contract
+
+`KtorWebSocketTerminalConnection` is intentionally narrow. Your server protocol must meet these
+requirements:
+
+- Send terminal process output to the client as ordered binary WebSocket frames. Each frame is fed
+  unchanged to `TerminalSession.receive`.
+- Accept binary frames from the client as terminal process input, in order. The adapter sends bytes
+  produced by keyboard input, IME commits, paste, and terminal responses unchanged.
+- Define a binary resize message. `encodeResize` is called for every `TerminalSize`; its returned
+  bytes are sent as a binary frame in resize order.
+- Do not use WebSocket text frames for terminal data. The adapter ignores them.
+- Treat a closed WebSocket as a disconnected terminal stream. Close the connection and create a new
+  one after reconnecting; do not reuse the old `TerminalSession`.
+
 Run its contract test with:
 
 ```shell
