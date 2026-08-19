@@ -54,6 +54,14 @@ val client = HttpClient(Android) {
 }
 ```
 
+### Production security
+
+Use `wss://` in production. Configure authentication on the caller-owned `HttpClient`, for example
+with an authorization header or a short-lived connection token appropriate to the server. Never send
+long-lived credentials as terminal input or embed them in the WebSocket URL. The server must
+authenticate the client, authorize access to the requested terminal session, and enforce per-session
+resource limits before forwarding process input or output.
+
 ```kotlin
 val connection = KtorWebSocketTerminalConnection.connect(
     scope = scope,
