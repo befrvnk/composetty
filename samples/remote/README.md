@@ -50,6 +50,10 @@ Create the client with the WebSockets plugin installed. Applications can configu
 authentication, logging, and the engine in this client:
 
 ```kotlin
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.websocket.WebSockets
+
 val client = HttpClient(Android) {
     install(WebSockets) {
         maxFrameSize = 1L * 1024 * 1024
@@ -77,6 +81,8 @@ input so its callbacks return promptly; the server remains responsible for apply
 limiting per-session output, and disconnecting clients that exceed service limits.
 
 ```kotlin
+import dev.befrvnk.composetty.sample.remote.KtorWebSocketTerminalConnection
+
 val connection = KtorWebSocketTerminalConnection.connect(
     scope = scope,
     client = client,
